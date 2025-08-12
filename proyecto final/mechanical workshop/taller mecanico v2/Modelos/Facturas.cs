@@ -11,12 +11,12 @@ public class Invoice
 
     public int SellerId { get; set; }
 
-    public Customer Customer { get; set; }       // Cliente
-    public Seller Seller { get; set; }           // Vendedor
+    public Customer Customer { get; set; }       
+    public Seller Seller { get; set; }           
 
-    public DateTime Date { get; set; }           // Fecha
+    public DateTime Date { get; set; }           
 
-    public List<Sale> SaleDetails { get; set; }// DetallesVenta
+    public List<Sale> SaleDetails { get; set; }  
 
     public List<Vehicle> Vehicles { get; set; }
 

@@ -5,10 +5,10 @@ public class Seller
 {
     [Key]
     public int SellerId { get; set; }
-    public string FirstName { get; set; }   // Nombre
-    public string LastName { get; set; }    // Apellido
-    public string Email { get; set; }       // Correo
-    public string PhoneNumber { get; set; } // Telefono
+    public string FirstName { get; set; }   
+    public string LastName { get; set; }    
+    public string Email { get; set; }       
+    public string PhoneNumber { get; set; } 
 
     public List<Vehicle> Vehicles{ get; set; }
 

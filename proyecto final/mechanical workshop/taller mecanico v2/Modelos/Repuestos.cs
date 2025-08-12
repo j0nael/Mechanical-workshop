@@ -25,8 +25,8 @@ public class SparePart
 
     public DateTime EntryDate { get; set; } = DateTime.Now; 
 
-    // Relationship with sales
-    public List<Sale> Sales { get; set; } = new();   // Ventas
+  ]
+    public List<Sale> Sales { get; set; } = new();   
 
     public Customer Customer { get; set; }
 

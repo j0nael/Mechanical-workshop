@@ -10,23 +10,20 @@ public class Sale
 
 
 
-    public Customer Customer { get; set; } // Cliente
+    public Customer Customer { get; set; } 
 
 
-    public Seller Seller { get; set; }     // Vendedor
+    public Seller Seller { get; set; }     
 
    
-    public SparePart SparePart { get; set; } // Repuesto
-
+    public SparePart SparePart { get; set; } 
     [Range(1, int.MaxValue)]
-    public int Quantity { get; set; } // Cantidad
-
-    public double UnitPrice { get; set; }  // PrecioUnitario
+    public int Quantity { get; set; } 
+    public double UnitPrice { get; set; }  
 
     public double Total => UnitPrice * Quantity;
 
-    public DateTime Date { get; set; } // Fecha
-
+    public DateTime Date { get; set; } 
     public Sale() { }
 
     public Sale(Customer customer, Seller seller, SparePart sparePart, int quantity)
@@ -35,7 +32,7 @@ public class Sale
         Seller = seller;
         SparePart = sparePart;
         Quantity = quantity;
-        UnitPrice = sparePart.UnitPrice; // Price frozen at the time of sale
+        UnitPrice = sparePart.UnitPrice; 
         Date = DateTime.Now;
     }
 

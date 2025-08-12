@@ -6,10 +6,10 @@ public class Mechanic
 {
     [Key]
     public int MechanicId { get; set; }
-    public string FirstName { get; set; }       // Nombre
-    public string Specialty { get; set; }       // Especialidad
+    public string FirstName { get; set; }      
+    public string Specialty { get; set; }      
 
-    public List<Repair> Repairs { get; set; }   // Reparaciones
+    public List<Repair> Repairs { get; set; }  
 
     public Mechanic(int mechanicId,string firstName, string specialty)
     {

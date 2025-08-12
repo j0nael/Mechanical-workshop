@@ -5,23 +5,23 @@ public class Repair
 {
     [Key]
     public int RepairId { get; set; }
-    public string VehicleLicensePlate { get; set; } // PlacaVehiculo
-    public int MechanicId { get; set; }              // IdMecanico
+    public string VehicleLicensePlate { get; set; } 
+    public int MechanicId { get; set; }             
 
     public int CustomerId {  get; set; }
 
     public int? InvoiceId { get; set; }
 
-    public string Description { get; set; }         // Descripcion
-    public double Cost { get; set; }                 // Costo
-    public DateTime Date { get; set; }               // Fecha
-    public Vehicle Vehicle { get; set; }             // Vehiculo
+    public string Description { get; set; }         
+    public double Cost { get; set; }                
+    public DateTime Date { get; set; }              
+    public Vehicle Vehicle { get; set; }            
 
     public Customer Customer { get; set; }
 
     public Invoice Invoice { get; set; }
 
-    public Mechanic Mechanic { get; set; }           // Mecanico
+    public Mechanic Mechanic { get; set; }          
 
 
     public Repair() { }

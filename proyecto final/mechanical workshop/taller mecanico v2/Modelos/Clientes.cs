@@ -6,13 +6,13 @@ public class Customer
 {
     [Key]
     public int CustomerId { get; set; }
-    public string FirstName { get; set; }      // Nombre
-    public string LastName { get; set; }       // Apellido
-    public string PhoneNumber { get; set; }    // Telefono
-    public string Email { get; set; }          // Correo
+    public string FirstName { get; set; }      
+    public string LastName { get; set; }       
+    public string PhoneNumber { get; set; }    
+    public string Email { get; set; }          
     
 
-    public List<Vehicle> Vehicles { get; set; } // Vehiculos
+    public List<Vehicle> Vehicles { get; set; }
 
     public List<Invoice> Invoices { get; set; }
 
