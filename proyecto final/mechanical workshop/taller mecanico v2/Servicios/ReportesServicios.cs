@@ -23,10 +23,10 @@ public class ReporteServicio
             return;
         }
 
-        // Ajustar fechaFin para incluir todo el día
+        
         fechaFin = fechaFin.Date.AddDays(1).AddTicks(-1);
 
-        // Consultar ventas en rango de fechas
+       
         var sales = db.Sales
             .Include(v => v.Customer)
             .Include(v => v.Seller)
