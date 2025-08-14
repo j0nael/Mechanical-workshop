@@ -25,7 +25,7 @@ public class SparePart
 
     public DateTime EntryDate { get; set; } = DateTime.Now; 
 
-  ]
+  
     public List<Sale> Sales { get; set; } = new();   
 
     public Customer Customer { get; set; }

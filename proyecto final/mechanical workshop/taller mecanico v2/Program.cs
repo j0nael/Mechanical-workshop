@@ -12,7 +12,7 @@ class Program
             Console.Clear();
             Console.WriteLine("=== MENÚ PRINCIPAL ===");
             Console.WriteLine("1. Gestión de Clientes");
-            Console.WriteLine("2. Gestión de mecanicos");
+            Console.WriteLine("2. Gestión de Mecanicos");
             Console.WriteLine("3. Gestión de Vehículos");
             Console.WriteLine("4. Gestión de Reparaciones");
             Console.WriteLine("5. Gestión de Repuestos");

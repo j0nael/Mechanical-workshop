@@ -3,7 +3,6 @@ using System;
 using System.Linq;
 using workshop_manager_v2.dbcontext;
 
-
 public class SalesService
 {
     public static void ViewSalesByDateRange()
@@ -35,7 +34,7 @@ public class SalesService
             .Where(s => s.Date >= startDate && s.Date <= endDate)
             .ToList();
 
-        if (sales.Count == 0)
+        if (!sales.Any())
         {
             Console.WriteLine("No sales found in the selected date range.");
             return;
@@ -81,6 +80,15 @@ public class SalesService
         Console.Write("Quantity: ");
         int quantity = int.Parse(Console.ReadLine());
 
+        if (quantity > sparePart.Quantity)
+        {
+            Console.WriteLine("Not enough stock for this sale.");
+            return;
+        }
+
+        // Reducir stock al hacer la venta
+        sparePart.Quantity -= quantity;
+
         var sale = new Sale
         {
             Customer = customer,
@@ -94,15 +102,13 @@ public class SalesService
         db.Sales.Add(sale);
         db.SaveChanges();
 
-        double total = sale.Total;
-
         Console.WriteLine("\n=== Sale successfully recorded ===");
         Console.WriteLine($"Customer: {customer.FirstName}");
         Console.WriteLine($"Seller: {seller.FirstName}");
         Console.WriteLine($"Spare Part: {sparePart.Name}");
         Console.WriteLine($"Quantity: {quantity}");
         Console.WriteLine($"Unit Price: {sale.UnitPrice}");
-        Console.WriteLine($"Total to pay: {total}");
+        Console.WriteLine($"Total to pay: {sale.Total}");
         Console.WriteLine($"Date: {sale.Date:yyyy-MM-dd HH:mm}");
     }
 
@@ -175,6 +181,11 @@ public class SalesService
             return;
         }
 
+        // Guardar stock actual antes de modificar
+        int previousQuantity = sale.Quantity;
+        var previousSparePart = sale.SparePart;
+
+        // Código de actualización de cliente, vendedor y repuesto (igual que antes)
         Console.WriteLine($"Current Customer: {sale.Customer.FirstName} (ID: {sale.Customer.CustomerId})");
         Console.Write("New Customer ID (press enter to keep current): ");
         string customerInput = Console.ReadLine();
@@ -183,11 +194,9 @@ public class SalesService
             var newCustomer = db.Customers.Find(newCustomerId);
             if (newCustomer != null)
                 sale.Customer = newCustomer;
-            else
-                Console.WriteLine("Customer not found. Not updated.");
         }
 
-        Console.WriteLine($"Current Seller: {sale.Customer.FirstName} (ID: {sale.Seller.SellerId})");
+        Console.WriteLine($"Current Seller: {sale.Seller.FirstName} (ID: {sale.Seller.SellerId})");
         Console.Write("New Seller ID (press enter to keep current): ");
         string sellerInput = Console.ReadLine();
         if (!string.IsNullOrEmpty(sellerInput) && int.TryParse(sellerInput, out int newSellerId))
@@ -195,11 +204,9 @@ public class SalesService
             var newSeller = db.Sellers.Find(newSellerId);
             if (newSeller != null)
                 sale.Seller = newSeller;
-            else
-                Console.WriteLine("Seller not found. Not updated.");
         }
 
-        Console.WriteLine($"Current Spare Part: {sale.Customer.FirstName} (ID: {sale.SparePart.SellerId})");
+        Console.WriteLine($"Current Spare Part: {sale.SparePart.Name} (ID: {sale.SparePart.SparePartId})");
         Console.Write("New Spare Part ID (press enter to keep current): ");
         string sparePartInput = Console.ReadLine();
         if (!string.IsNullOrEmpty(sparePartInput) && int.TryParse(sparePartInput, out int newSparePartId))
@@ -207,18 +214,29 @@ public class SalesService
             var newSparePart = db.SpareParts.Find(newSparePartId);
             if (newSparePart != null)
             {
+                // Devolver stock del repuesto anterior
+                previousSparePart.Quantity += previousQuantity;
+
+                // Asignar nuevo repuesto
                 sale.SparePart = newSparePart;
-                sale.UnitPrice = newSparePart.UnitPrice; 
+                sale.UnitPrice = newSparePart.UnitPrice;
             }
-            else
-                Console.WriteLine("Spare part not found. Not updated.");
         }
 
         Console.Write($"Current quantity: {sale.Quantity}. New quantity: ");
         string quantityInput = Console.ReadLine();
         if (!string.IsNullOrEmpty(quantityInput) && int.TryParse(quantityInput, out int newQuantity))
         {
-            sale.Quantity = newQuantity;
+            int quantityDiff = newQuantity - previousQuantity;
+            if (quantityDiff > 0 && sale.SparePart.Quantity < quantityDiff)
+            {
+                Console.WriteLine("Not enough stock for this update.");
+            }
+            else
+            {
+                sale.SparePart.Quantity -= quantityDiff;
+                sale.Quantity = newQuantity;
+            }
         }
 
         db.SaveChanges();
@@ -235,7 +253,9 @@ public class SalesService
         }
 
         using var db = new Connection();
-        var sale = db.Sales.Find(id);
+        var sale = db.Sales
+                     .Include(s => s.SparePart)
+                     .FirstOrDefault(s => s.SaleId == id);
 
         if (sale == null)
         {
@@ -243,8 +263,11 @@ public class SalesService
             return;
         }
 
+        // Devolver stock al cancelar la venta
+        sale.SparePart.Quantity += sale.Quantity;
+
         db.Sales.Remove(sale);
         db.SaveChanges();
-        Console.WriteLine("Sale deleted.");
+        Console.WriteLine("Sale deleted and stock restored.");
     }
 }

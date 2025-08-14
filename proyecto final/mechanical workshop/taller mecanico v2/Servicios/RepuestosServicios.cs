@@ -46,7 +46,7 @@ public class SparePartService
         Console.Write("Wholesale price: ");
         double wholesalePrice = double.Parse(Console.ReadLine());
 
-        var sparePart = new SparePart(0,name, quantity, unitPrice, wholesalePrice);
+        var sparePart = new SparePart(0, name, quantity, unitPrice, wholesalePrice);
 
         using var db = new Connection();
         db.SpareParts.Add(sparePart);
@@ -58,17 +58,35 @@ public class SparePartService
     public static void View()
     {
         using var db = new Connection();
-        var list = db.SpareParts.ToList();
 
-        foreach (var sp in list)
+        var repuestos = db.SpareParts
+                          .Select(r => new
+                          {
+                              r.SparePartId,
+                              r.Name,
+                              Stock = r.Quantity, // Usar stock real directamente
+                              r.UnitPrice,
+                              r.WholesalePrice
+                          })
+                          .Where(r => r.Stock > 0)
+                          .ToList();
+
+        if (!repuestos.Any())
         {
-            Console.WriteLine($"ID: {sp.SparePartId}, Name: {sp.Name}, Quantity: {sp.Quantity}, Unit Price: {sp.UnitPrice}, Wholesale Price: {sp.WholesalePrice}");
+            Console.WriteLine("No spare parts available in stock.");
+            return;
+        }
+
+        Console.WriteLine("=== Repuestos disponibles ===");
+        foreach (var repuesto in repuestos)
+        {
+            Console.WriteLine($"ID: {repuesto.SparePartId}, Name: {repuesto.Name}, Stock: {repuesto.Stock}, Unit Price: {repuesto.UnitPrice}, Wholesale Price: {repuesto.WholesalePrice}");
         }
     }
 
     public static void Update()
     {
-        Console.Write("ID of the repair to update: ");
+        Console.Write("ID of the spare part to update: ");
         if (!int.TryParse(Console.ReadLine(), out int id))
         {
             Console.WriteLine("Invalid ID.");
@@ -76,36 +94,45 @@ public class SparePartService
         }
 
         using var db = new Connection();
-        var repair = db.Repairs.Find(id);
+        var sparePart = db.SpareParts.Find(id);
 
-        if (repair == null)
+        if (sparePart == null)
         {
-            Console.WriteLine("Repair not found.");
+            Console.WriteLine("Spare part not found.");
             return;
         }
 
-        Console.Write($"Current description: {repair.Description}. New description: ");
-        string description = Console.ReadLine();
-        repair.Description = string.IsNullOrEmpty(description) ? repair.Description : description;
+        Console.Write($"Current name: {sparePart.Name}. New name: ");
+        string name = Console.ReadLine();
+        sparePart.Name = string.IsNullOrEmpty(name) ? sparePart.Name : name;
 
-        Console.Write($"Current date: {repair.Date.ToShortDateString()}. New date (yyyy-MM-dd): ");
-        string dateInput = Console.ReadLine();
-        if (DateTime.TryParse(dateInput, out DateTime newDate))
-            repair.Date = newDate;
+        Console.Write($"Current quantity: {sparePart.Quantity}. New quantity: ");
+        string qtyInput = Console.ReadLine();
+        if (int.TryParse(qtyInput, out int newQty))
+            sparePart.Quantity = newQty;
 
-        Console.Write($"Current cost: {repair.Cost}. New cost: ");
-        string costInput = Console.ReadLine();
-        if (double.TryParse(costInput, out double newCost))
-            repair.Cost = newCost;
+        Console.Write($"Current unit price: {sparePart.UnitPrice}. New unit price: ");
+        string unitPriceInput = Console.ReadLine();
+        if (double.TryParse(unitPriceInput, out double newUnitPrice))
+            sparePart.UnitPrice = newUnitPrice;
+
+        Console.Write($"Current wholesale price: {sparePart.WholesalePrice}. New wholesale price: ");
+        string wholesaleInput = Console.ReadLine();
+        if (double.TryParse(wholesaleInput, out double newWholesale))
+            sparePart.WholesalePrice = newWholesale;
 
         db.SaveChanges();
-        Console.WriteLine("Repair updated.");
+        Console.WriteLine("Spare part updated.");
     }
 
     public static void Delete()
     {
         Console.Write("ID of the spare part to delete: ");
-        int id = int.Parse(Console.ReadLine());
+        if (!int.TryParse(Console.ReadLine(), out int id))
+        {
+            Console.WriteLine("Invalid ID.");
+            return;
+        }
 
         using var db = new Connection();
         var sp = db.SpareParts.Find(id);
